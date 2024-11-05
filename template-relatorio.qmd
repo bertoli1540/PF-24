@@ -132,13 +132,12 @@ head( top5medalhas, 5)
 ```
 
 
-Com o gráfico e a tabela conseguimos analisar a força dos Estados Unidos entre as mulheres se mostrando o país com mais medalhas contabilizando 741 mais de 300 medalhas a frente do segundo país que aparece que é a Russia com 416 medalhas logo deposi vem a China com 384 medalhas e com 44 medalhas atras em 4 no top de medalhas desses 5 cilcos olimpicos a Australia que dessas 5 olimpiadas foi o primeiro país a sediar em 2000 e no geral obteve suas 340 medalhas e a Alemanha em 5 com 268 medalhas quase 100 medalhas atras da Australia.
-
+Os Estados Unidos lideram o número de mulheres medalhistas, com 741 medalhas, representando mais de um terço das medalhas dos países do top 5. Em segundo lugar, a Rússia acumula 416 medalhas, refletindo seu alto investimento em esportes. A China, com 384 medalhas, teve um aumento significativo desde as Olimpíadas de Pequim 2008, mantendo-se no top 5 nas edições seguintes, o que demonstra um investimento estratégico, especialmente no período das Olimpíadas no país. A Austrália, com 340 medalhas (15,8% do total do top 5), se destaca especialmente em esportes aquáticos, como natação e vela. Em quinto lugar, a Alemanha apresenta 268 medalhas nas últimas cinco Olimpíadas, ficando atrás dos outros quatro países.
 ## Analise 2
 
-### ANALISANDO IMC EM DIFERENTES ESPORTES
+### ANALISANDO O IMC EM DIFERENTES ESPORTES
 
-Nessa analise o dado em questão é o IMC que é uma variavel quantitativa continua. Esta analise vai ser apresentado um boxplot com 5 esportes Judo, Badminton, Futebol, Ginastica e Atletismo, onde será avaliado o indice de IMC entre cada um deles e se tem diferença entre cada esporte.
+Nessa analise os dados são o IMC que é uma variavel quantitativa continua e os esportes que são por sua vez qualitativa nominal. Esta analise vai ser apresentado um boxplot com 5 esportes Judo, Badminton, Futebol, Ginastica e Atletismo, onde será avaliado o indice de IMC entre cada um deles e se tem diferença entre cada esporte.
 
 ```{r}
 
@@ -216,12 +215,14 @@ cat("\\begin{quadro}[H]
 
 ```
 
+A comparação dos valores de IMC entre os esportes analisados indica algumas tendências importantes. Judô apresenta os valores mais elevados de média (25,70), desvio padrão (5,12) e variância (26,23), devido à divisão das categorias de competição por faixa de peso, o que leva a uma variação maior no IMC. No atletismo, o desvio padrão (3,86) e variância (14,92) também são altos, resultado das diferentes modalidades, como corrida e arremesso de peso, que tendem a atrair atletas com variações no IMC.
 
-O grafico apresenta dados interessantes para serem apresentados. Primeiro o Judo que apresenta alguns outliers mas devido que o esporte é separado por peso e isso afeta diretamente o imc pois sendo mais pesado tende a afetar diretamente o imc. O atletismo tem muitos outliers com imcs acima do padrão para o esporte mas devido a alguns esportes de força que geralmente apresentam pessoas com pesos maiores e causa esse tanto de outliers em questão e a sua média e menor do que a do judo. O badminton por sua vez mostra os números de imc são muitos proximos tendo seu boxplot bem pequeno o que demontra uniformidade nos dados. O futebol demonstra outliers para ambos os lados o que mostra a diferença do peso no esporte mas ainda é um boxplot bastante pequeno que mostra a uniformidade dos dados também mas apresenta uma maior variedade dos dados do que no badminton por exemplo. A ginastica é o esporte que apresenta os menores imc entre os boxplots onde a média é muito proxima de 20.
+No badminton, desvio padrão (1,50) e variância (2,26) são baixos, demonstrando uma uniformidade no IMC dos atletas, com uma pequena diferença entre mínimo (18,94) e máximo (26,73). O futebol também apresenta baixa variação (desvio padrão de 1,73 e variância de 2,99), mostrando IMCs semelhantes entre os atletas. Ginástica, por outro lado, apresenta a menor média (20,68), com variância moderada (5,67), inferior à de judô e atletismo, mas ainda maior do que a de futebol e badminton.
 
 ## Analise 3
 
 ### TOP 3 MEDALHISTAS DAS OLIMPIADAS 2000-2016
+Esta análise irá mostrar a relação das medalhas que os top 3 medalhistas que mais conquistaram medalhas durante o ciclo de Sydney 2000 - Rio 2016 e quais medalhas cada um conquistou. Sendo esta variavel qualitativa ordinal por se tratar de posições. Esta analise mostrará quantas medalhas eles conquistaram e a cor dessas medalhas, afim de mostrar uma tendencia entre os atletas que mais conquistam medalhas e quais as medalhas que mais aparecem.
 
 
 ```{r}
@@ -254,7 +255,7 @@ library(ggplot2)
 library(forcats)
 library(stringr)
 
-# Adaptando o código para o novo banco de dados e variáveis
+
 trans_drv <- top3 %>%
   mutate(Nome = case_when(
     str_detect(Nome, "auto") ~ "auto",
