@@ -259,7 +259,7 @@ trans_drv <- top3 %>%
   mutate(Nome = case_when(
     str_detect(Nome, "auto") ~ "auto",
     str_detect(Nome, "manual") ~ "manual",
-    TRUE ~ Nome  # Mantém o nome original se não for "auto" ou "manual"
+    TRUE ~ Nome 
   )) %>%
   group_by(Nome, Medalha) %>%
   summarise(freq = n(), .groups = "drop") %>%
@@ -267,11 +267,11 @@ trans_drv <- top3 %>%
     freq_relativa = round(freq / sum(freq) * 100, 1)
   )
 
-# Calcula as legendas com frequência e porcentagem
+
 porcentagens <- str_c(trans_drv$freq_relativa, "%") %>% str_replace("\\.", ",")
 legendas <- str_squish(str_c(trans_drv$freq, " (", porcentagens, ")"))
 
-# Criação do gráfico
+
 ggplot(trans_drv) +
   aes(
     x = fct_reorder(Nome, freq, .desc = TRUE),
@@ -286,11 +286,9 @@ ggplot(trans_drv) +
     size = 3
   ) +
   labs(x = "Nome do Atleta", y = "Quantidade de Medalhas") +
-  theme_estat() +  # Ou use `theme_estat()` se for um tema personalizado
+  theme_estat() +  
   ggtitle("Quantidade de Medalhas por Atleta e Tipo de Medalha")
 
-# Salvando o gráfico em PDF
-ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
 
 ```
 No top 3 medalhistas das Olimpíadas de Sydney 2000 até Rio 2016, temos Michael Phelps em primeiro lugar com um total de 28 medalhas, seguido por outros dois atletas empatados com 12 medalhas cada. Todos os três atletas praticam natação, evidenciando que este é um dos esportes onde os competidores têm maior possibilidade de acumular medalhas. Isso se deve ao fato de que, na natação, as categorias não são definidas por peso, mas sim pelos diferentes estilos de nado, o que permite aos atletas competirem em várias modalidades.
