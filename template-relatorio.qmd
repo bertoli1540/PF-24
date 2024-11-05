@@ -1,32 +1,8 @@
 ---
-title: "Modelo Projeto - Quarto"
+title: "House of Excellence"
 
-# Nome do documento PDF gerado
 output-file: titulo do projeto
 ---
-```{r}
-#| include: false
-source("rdocs/source/packages.R")
-```
-
-
-```{r}
-# Rodar apenas uma vez na vida!
-## Instalando o tinytex(pacote apenas)
-### CRAN version
-install.packages('tinytex')
-
-### or the development version on GitHub
-remotes::install_github('rstudio/tinytex')
-
-## Baixando o tinytex
-library(tinytex)
-tinytex::install_tinytex()
-
-
-```
-
-
 
 # Introdução
 
@@ -34,4 +10,313 @@ tinytex::install_tinytex()
 
 # Análises
 
+## Analise 1
+```{r}
+
+
+
+library(kableExtra)
+library(DT)
+library(knitr)
+library(pacman)
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(readxl)
+library(plotly)
+athenas = read_excel("OlimpiadasPS.xlsx", 
+                           sheet = "Athina")
+
+rj = read_excel("OlimpiadasPS.xlsx", 
+                    sheet = "Rio de Janeiro")
+
+londres = read_excel("OlimpiadasPS.xlsx", 
+                          sheet = "London")
+
+sydney = read_excel("OlimpiadasPS.xlsx", 
+                            sheet = "Sydney")
+
+pequim = read_excel("OlimpiadasPS.xlsx", 
+                    sheet = "Beijing")
+# Organizando o banco de dados
+colnames(sydney) = c("Nome", "Sexo", "Idade", "Altura", "Peso", "Pais", "Esporte", "Evento", "Medalha")
+
+colnames(rj) = c("Nome", "Sexo", "Idade", "Altura", "Peso", "Pais", "Esporte", "Evento", "Medalha")
+
+colnames(londres) = c("Nome", "Sexo", "Idade", "Altura", "Peso", "Pais", "Esporte", "Evento", "Medalha")
+
+colnames(pequim) = c("Nome", "Sexo", "Idade", "Altura", "Peso", "Pais", "Esporte", "Evento", "Medalha")
+
+colnames(athenas) = c("Nome", "Sexo", "Idade", "Altura", "Peso", "Pais", "Esporte", "Evento", "Medalha")
+
+primeiro =  rbind(athenas,rj,londres,sydney,pequim)
+
+olimpiadasG = subset(primeiro, Medalha== "Gold")
+
+olimpiadasS = subset(primeiro, Medalha== "Silver")
+
+olimpiadasB = subset(primeiro, Medalha== "Bronze")
+
+olimpiadas =  rbind(olimpiadasG,olimpiadasS,olimpiadasB)
+
+
+estat_colors <- c(
+"#A11D21", "#003366", "#CC9900",
+"#663333", "#FF6600", "#CC9966",
+"#999966", "#006606", "#008091",
+"#041835", "#666666" )
+
+theme_estat <- function(...) {
+theme <- ggplot2::theme_bw() +
+ggplot2::theme(
+axis.title.y = ggplot2::element_text(colour = "black", size = 12),
+axis.title.x = ggplot2::element_text(colour = "black", size = 12),
+axis.text = ggplot2::element_text(colour = "black", size = 9.5)
+,
+panel.border = ggplot2::element_blank(),
+axis.line = ggplot2::element_line(colour = "black"),
+legend.position = "top",
+...
+)
+return(
+list(
+theme,
+scale_fill_manual(values = estat_colors),
+scale_colour_manual(values = estat_colors)
+)
+)
+}
+```
+### TOP 5 PAÍSES MEDALHISTAS DAS OLIMPIADAS DE SYDNEY(2000) - RIO DE JANEIRO (2016)
+
+Nessa primeira analise a variavel analisada é quantitativa discreta (eixo y) pois vamos contabilizar quantas medalhas cada país ganhou apenas entre as mulheres durante 5 ciclos olimpicos e a varivel dos países (eixo x) é quantitativa nominal por ser nomes de países e objetivo dessa analise é entender quais são os países com mais melalhas entre as mulheres durante esse espaço de tempo de 5 olimpiadas.
+
+```{r}
+medalW = subset(olimpiadas, Sexo== "F")
+
+
+
+
+
+
+
+medalW$Pais[medalW$Pais == "United States"] = "Estados Unidos"
+
+medalW$Pais[medalW$Pais == "Germany"] = "Alemanha"
+
+tabelamedalhasgeral= table(medalW$Pais)
+
+top5medalhas = sort(tabelamedalhasgeral, decreasing = TRUE)
+
+
+
+top5= data.frame(Team = names(head(top5medalhas, 5)), 
+                      Medalhas = as.numeric(head(top5medalhas, 5)))
+
+
+
+ggplot(top5, aes(x = reorder(Team, -Medalhas), y = Medalhas)) +
+  geom_bar(stat = "identity", fill = "#A11D21") +
+  geom_text(aes(label = paste0(Medalhas, " (", round(Medalhas / sum(Medalhas) * 100, 1), "%)")),
+            vjust = -0.5, size = 2.5) +
+  
+  labs(title = "Top 5 países com mais medalhas entre as mulheres", 
+       x = "Países", y = "Número de Medalhas") +
+  theme_estat()
+
+
+
+
+
+head( top5medalhas, 5)
+```
+
+
+Com o gráfico e a tabela conseguimos analisar a força dos Estados Unidos entre as mulheres se mostrando o país com mais medalhas contabilizando 741 mais de 300 medalhas a frente do segundo país que aparece que é a Russia com 416 medalhas logo deposi vem a China com 384 medalhas e com 44 medalhas atras em 4 no top de medalhas desses 5 cilcos olimpicos a Australia que dessas 5 olimpiadas foi o primeiro país a sediar em 2000 e no geral obteve suas 340 medalhas e a Alemanha em 5 com 268 medalhas quase 100 medalhas atras da Australia.
+
+## Analise 2
+
+### ANALISANDO IMC EM DIFERENTES ESPORTES
+
+Nessa analise o dado em questão é o IMC que é uma variavel quantitativa continua. Esta analise vai ser apresentado um boxplot com 5 esportes Judo, Badminton, Futebol, Ginastica e Atletismo, onde será avaliado o indice de IMC entre cada um deles e se tem diferença entre cada esporte.
+
+```{r}
+
+
+olimpiadas$Peso <- as.numeric(olimpiadas$Peso)  
+
+olimpiadas$pesokg = olimpiadas$Peso * 0.453592 
+
+olimpiadas$alturam = olimpiadas$Altura / 100
+
+
+olimpiadas$imc <- olimpiadas$pesokg / (olimpiadas$alturam^2)
+
+judo =  subset(olimpiadas, Esporte == "Judo")
+
+badminton =  subset(olimpiadas, Esporte == "Badminton")
+
+futebol = subset(olimpiadas, Esporte == "Football")
+
+ginastica = subset(olimpiadas, Esporte == "Gymnastics")
+
+atletismo = subset(olimpiadas, Esporte == "Athletics")
+
+espotes=rbind(judo,badminton,futebol,ginastica,atletismo)
+
+espotes$Esporte[espotes$Esporte == "Football"] = "Futebol"
+
+espotes$Esporte[espotes$Esporte == "Gymnastics"] = "Ginastica"
+
+espotes$Esporte[espotes$Esporte == "Athletics"] = "Atletismo"
+
+ggplot(espotes) +
+  aes(x = reorder(Esporte, imc, FUN = median), y = imc) +
+  geom_boxplot(aes(fill = "Mediana"), width = 0.5) +  
+  stat_summary(
+    aes(shape = "Média"), fun = "mean", geom = "point", size = 3, fill = "white"
+  ) +
+  labs(x = "Esporte", y = "IMC", title = "IMC POR ESPORTE") + 
+  scale_shape_manual(values = c(23)) +  
+  scale_fill_manual(values = c("Mediana" = "#A11D21")) +  
+  guides(fill = "none", shape = "none") +  
+  theme_estat()  
+
+
+```
+
+
+```{r, echo=FALSE, results='asis'}
+cat("\\begin{quadro}[H]
+\\caption{Medidas resumo dos esportes}
+\\centering
+\\begin{tabular}{| l |
+			S[table-format = 2.2]
+			S[table-format = 1.2]
+			S[table-format = 2.2]
+			S[table-format = 2.2]
+			S[table-format = 2.2]
+			|}
+	\\toprule
+		\\textbf{Estatística} & \\textbf{Atletismo} & \\textbf{Badminton} & \\textbf{Futebol} & \\textbf{Ginastica} & \\textbf{Judo} \\\\
+		\\midrule
+		Média & 22.30 & 22.21 & 22.51 & 20.68 & 25.70 \\\\
+		Desvio Padrão & 3.86 & 1.50 & 1.73 & 2.38 & 5.12 \\\\
+		Variância & 14.92 & 2.26 & 2.99 & 5.67 & 26.23 \\\\
+		Mínimo & 15.82 & 18.94 & 16.73 & 15.16 & 18.52 \\\\
+		1º Quartil & 20.03 & 21.22 & 21.34 & 18.61 & 22.06 \\\\
+		Mediana & 21.45 & 22.28 & 22.49 & 21.09 & 24.68 \\\\
+		3º Quartil & 23.67 & 23.21 & 23.71 & 22.48 & 27.70 \\\\
+		Máximo & 44.38 & 26.73 & 29.07 & 26.45 & 56.50 \\\\
+	\\bottomrule
+	\\end{tabular}
+	\\label{quad:quadro_resumo1}
+\\end{quadro}
+")
+
+```
+
+
+O grafico apresenta dados interessantes para serem apresentados. Primeiro o Judo que apresenta alguns outliers mas devido que o esporte é separado por peso e isso afeta diretamente o imc pois sendo mais pesado tende a afetar diretamente o imc. O atletismo tem muitos outliers com imcs acima do padrão para o esporte mas devido a alguns esportes de força que geralmente apresentam pessoas com pesos maiores e causa esse tanto de outliers em questão e a sua média e menor do que a do judo. O badminton por sua vez mostra os números de imc são muitos proximos tendo seu boxplot bem pequeno o que demontra uniformidade nos dados. O futebol demonstra outliers para ambos os lados o que mostra a diferença do peso no esporte mas ainda é um boxplot bastante pequeno que mostra a uniformidade dos dados também mas apresenta uma maior variedade dos dados do que no badminton por exemplo. A ginastica é o esporte que apresenta os menores imc entre os boxplots onde a média é muito proxima de 20.
+
+## Analise 3
+
+### TOP 3 MEDALHISTAS DAS OLIMPIADAS 2000-2016
+
+
+```{r}
+olimpiadas$Medalha[olimpiadas$Medalha == "Gold"] = "Ouro"
+olimpiadas$Medalha[olimpiadas$Medalha == "Silver"] = "Prata"
+
+
+ouro = subset(olimpiadas, Medalha == "Ouro")
+
+prata = subset(olimpiadas, Medalha == "Prata")
+
+bronze = subset(olimpiadas, Medalha == "Bronze")
+
+medalhaalltime = rbind(ouro,prata,bronze)
+
+
+michaelphelps = subset(medalhaalltime,Nome == "Michael Fred Phelps, II")
+
+natalie =  subset(medalhaalltime, Nome == "Natalie Anne Coughlin (-Hall)")
+
+ryan = subset(medalhaalltime,Nome == "Ryan Steven Lochte")
+
+top3= rbind(michaelphelps, natalie,  ryan)
+```
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(forcats)
+library(stringr)
+
+# Adaptando o código para o novo banco de dados e variáveis
+trans_drv <- top3 %>%
+  mutate(Nome = case_when(
+    str_detect(Nome, "auto") ~ "auto",
+    str_detect(Nome, "manual") ~ "manual",
+    TRUE ~ Nome  # Mantém o nome original se não for "auto" ou "manual"
+  )) %>%
+  group_by(Nome, Medalha) %>%
+  summarise(freq = n(), .groups = "drop") %>%
+  mutate(
+    freq_relativa = round(freq / sum(freq) * 100, 1)
+  )
+
+# Calcula as legendas com frequência e porcentagem
+porcentagens <- str_c(trans_drv$freq_relativa, "%") %>% str_replace("\\.", ",")
+legendas <- str_squish(str_c(trans_drv$freq, " (", porcentagens, ")"))
+
+# Criação do gráfico
+ggplot(trans_drv) +
+  aes(
+    x = fct_reorder(Nome, freq, .desc = TRUE),
+    y = freq,
+    fill = Medalha,
+    label = legendas
+  ) +
+  geom_col(position = position_dodge2(preserve = "single", padding = 0)) +
+  geom_text(
+    position = position_dodge(width = 0.9),
+    vjust = -0.5, hjust = 0.5,
+    size = 3
+  ) +
+  labs(x = "Nome do Atleta", y = "Quantidade de Medalhas") +
+  theme_estat() +  # Ou use `theme_estat()` se for um tema personalizado
+  ggtitle("Quantidade de Medalhas por Atleta e Tipo de Medalha")
+
+# Salvando o gráfico em PDF
+ggsave("colunas-bi-freq.pdf", width = 158, height = 93, units = "mm")
+
+```
+No top 3 medalhistas das Olimpíadas de Sydney 2000 até Rio 2016, temos Michael Phelps em primeiro lugar com um total de 28 medalhas, seguido por outros dois atletas empatados com 12 medalhas cada. Todos os três atletas praticam natação, evidenciando que este é um dos esportes onde os competidores têm maior possibilidade de acumular medalhas. Isso se deve ao fato de que, na natação, as categorias não são definidas por peso, mas sim pelos diferentes estilos de nado, o que permite aos atletas competirem em várias modalidades.
+A análise detalhada dos três principais medalhistas revela que a maioria de suas conquistas é de medalhas de ouro, totalizando 32 medalhas, o que corresponde a 61,53% das medalhas entre eles. Em sequência, esses atletas conquistaram 10 medalhas de prata e 10 de bronze. Esses dados sugerem uma clara tendência entre os medalhistas mais bem-sucedidos em conquistar medalhas de ouro, destacando o alto nível competitivo desses atletas. Dessa forma, observa-se uma relação entre ser um dos medalhistas de maior sucesso e a predominância de medalhas de ouro em suas conquistas.
+
+
+
+## Analise 4
+
+Esta análise irá mostrar a relação entre altura (em centímetros) e peso (em quilos), sendo ambas as variáveis quantitativas contínuas. Todos os atletas analisados nesta pesquisa são medalhistas das Olimpíadas de Sydney 2000 e Rio 2016. Para analisar a correlação entre as duas variáveis, utilizou-se o cálculo do coeficiente de correlação de Pearson.
+
+```{r}
+
+
+ggplot(olimpiadas, aes(x = pesokg, y = Altura)) +
+  geom_point(color = "#A11D21") +
+  labs(
+    title = "Altura x Peso",
+    x = "Peso",
+    y = "Altura",
+    color = "Legenda"
+  ) +
+  theme_estat()
+
+correlacao <- cor(olimpiadas$pesokg, olimpiadas$Altura, use = "complete.obs")
+
+```
+ O coeficiente de Pearson calculado foi de **0.8053352**, indicando uma forte correlação positiva entre peso e altura, o que confirma a tendência de que, à medida que a altura dos atletas aumenta, o peso também tende a aumentar. No entanto, é importante ressaltar que alguns dos pesos mais altos estão associados a alturas relativamente baixas. Isso sugere que, embora haja uma tendência de correlação positiva, uma altura maior não implica necessariamente um peso maior. Em resumo, o gráfico revela uma relação significativa entre peso e altura, mas outros fatores, como composição corporal e características individuais, também desempenham um papel importante na determinação do peso dos atletas. 
 # Conclusões
